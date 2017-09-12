@@ -11,6 +11,8 @@ const DeviceSchema = new mongoose.Schema({
   type: String,
   brand: String,
   os: String,
+  model: String,
+  modelNumber: String,
 });
 
 export const User = mongoose.model('User', UserSchema);
