@@ -1,14 +1,14 @@
-import express from 'express';
-import cors from 'cors';
+import express from 'express'
+import cors from 'cors'
 import bodyParser from 'body-parser'
-import router from './router';
-import errorHandler from './middleware/error-handler';
+import router from './auth-router'
+import errorHandler from './error-handler'
 
-const app = express();
+const app = express()
 
 app
   .use(cors({ origin: 'http://localhost:8081', credentials: true }))
   .use(bodyParser.json())
   .use(router)
   .use(errorHandler)
-  .listen(process.env.PORT || 8080, () => console.log('server on port 8080'));
+  .listen(process.env.PORT || 8080, () => console.log('server on port 8080'))
