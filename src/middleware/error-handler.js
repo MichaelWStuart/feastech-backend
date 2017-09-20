@@ -1,7 +1,9 @@
-module.exports = (err, req, res, next) => {
+const handler = (err, req, res, next) => {
   const error = Number(err.message);
   let code = 500;
   let message = 'General';
+
+  console.log(err)
 
   switch (error) {
     case 4000:
@@ -14,7 +16,7 @@ module.exports = (err, req, res, next) => {
       break;
     case 4010:
       code = 401;
-      message = 'Password mismatch';
+      message = 'Incorrect password';
       break;
     case 11000:
       code = 409;
@@ -23,3 +25,5 @@ module.exports = (err, req, res, next) => {
 
   res.status(code).send(message);
 }
+
+export default handler;
