@@ -19,13 +19,13 @@ router.post('/register', (req, res, next) => {
 });
 
 
-router.post('/user/login', (req, res) => {
+router.post('/user/login', (req, res, next) => {
   const { _id, password } = req.body;
   User.findById(_id)
     .then(data =>
       data.passwordHashCompare(password)
         .then(user => res.send(user))
-        .catch(err => res.status(401).send({ message: 'unauthorized: password mismatch' })))
+        .catch(err => next(new Error(4010))))
     .catch(err => res.send(err))
 })
 
