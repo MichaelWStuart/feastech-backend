@@ -1,31 +1,39 @@
-import {} from 'dotenv/config'
-import mongoose from 'mongoose'
 import { Router } from 'express'
 import User from './user'
+import basicAuth from './basic-auth'
+import bearerAuth from './bearer-auth'
 
 const router = Router()
 
-mongoose.connect(process.env.DB_URI)
+const cookie = token =>
+  ['token', token, { maxAge: 1000 * 60 * 60 * 24, httpOnly: true }]
 
-router.post('/register', (req, res, next) => {
-  const { username, password } = req.body
-  if (!username || !password)
-    return next(new Error(4000))
+const noCookie = () =>
+  ['token', '', { expires: new Date(0) }]
+
+router.get('/register', basicAuth, (req, res, next) => {
+  const { username, password } = req.credentials
   User.create({ username, password })
-    .then(token => res.send(token))
+    .then(token => res.cookie(...cookie(token)).send('two hundred'))
     .catch(err => next(new Error(err.code)))
 });
 
-router.post('/login', (req, res, next) => {
-  const { username, password } = req.body
+router.get('/login', basicAuth, (req, res, next) => {
+  const { username, password } = req.credentials
   User.findOne({ username })
     .then(user =>
       user.passwordHashCompare(password)
         .then(user => user.tokenSeedRefresh()
-          .then(token => res.send(token))
-          .catch(err => next(new Error(500))))
+          .then(token => res.cookie(...cookie(token)).send('two hundred'))
+          .catch(err => next(new Error(5031))))
         .catch(err => next(new Error(4010))))
     .catch(err => next(new Error(err.code)))
+})
+
+router.get('/logout', bearerAuth, (req, res, next) => {
+  req.user.tokenSeedDestroy()
+    .then(() => res.cookie(...noCookie()).send('two hundred'))
+    .catch((err) => next(new Error(err.code)))
 })
 
 export default router

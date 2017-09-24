@@ -1,4 +1,3 @@
-import {} from 'dotenv/config'
 import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
 import crypto from 'crypto'
@@ -37,6 +36,14 @@ UserSchema.methods.tokenSeedRefresh = function() {
     this.save()
       .then(() => resolve(createToken(this.tokenSeed)))
       .catch(() => reject()))
+}
+
+UserSchema.methods.tokenSeedDestroy = function() {
+  this.tokenSeed = undefined
+  return new Promise((resolve, reject) =>
+    this.save()
+      .then(() => resolve())
+      .catch((err) => reject(err)))
 }
 
 const User = mongoose.model('User', UserSchema)
